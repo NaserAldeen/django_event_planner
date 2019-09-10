@@ -65,6 +65,8 @@ class Login(View):
     template_name = 'login.html'
 
     def get(self, request, *args, **kwargs):
+        if not request.user.is_anonymous:
+           return redirect("home")
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
 
@@ -222,7 +224,10 @@ def book_event(request, event_id):
     <br>
     <p>Thank you!</p>
     """.format(booking_obj.event.title, booking_obj.time, booking_obj.tickets)
-    send_email(request.user.email, "Booking Receipt", email_body )
+    try:
+        send_email(request.user.email, "Booking Receipt", email_body )
+    except:
+        pass
     return redirect('event-detail', obj.id )
 
 def cancel_booking(request, booking_id):
