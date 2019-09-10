@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+{% load tagg %}
+{% if my_events|length > 0 %}
+
+<div class="container mt-5"><h2 style="text-align:center;">Events I organized</h2></div>
+
+<div class="container mx-5 my-5">
+	<table class="table">
+		<thead class="thead-dark">
+			<tr>
+				<th scope="col">Title</th>
+				<th scope="col">Date</th>
+				<th scope="col">Time</th>
+				<th scope="col">Location</th>
+				<th scope="col">Capacity</th>
+				<th scope="col">Tickets left</th>
+
+				<th scope="col"></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for event in my_events %}
+			<tr>
+				<th scope="row">{{event.title}}</th>
+				<td>{{event.date}}</td>
+				<td>{{event.time}}</td>
+				<td>{{event.location}}</td>
+				<td>{{event.seats}}</td>
+
+				<td>{{event.get_seats_left}}</td>
+
+
+				<td><a href="{% url 'update-event' event.id %}">Edit</a></td>
+
+			</tr>
+			{% endfor %}
+
+
+		</tbody>
+	</table>
+</div>
+
+{% endif %}
+
+
+{% if attended|length > 0 %}
+<div class="container mt-5"><h2 style="text-align:center;">Events I Attended</h2></div>
+
+
+
+
+<div class="container mx-5 my-5">
+	<table class="table">
+		<thead class="thead-dark">
+			<tr>
+				<th scope="col">Title</th>
+				<th scope="col">Date</th>
+				<th scope="col">Time</th>
+				<th scope="col">Location</th>
+				<th scope="col">Tickets</th>
+				<th scope="col">Delete</th>
+				
+				
+
+
+
+				<th scope="col"></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for event in attended %}
+			<tr>
+				<th scope="row">{{event.event.title}}</th>
+
+				<td>{{event.event.date}}</td>
+				<td>{{event.event.time}}</td>
+				<td>{{event.event.location}}</td>
+				<td>{{event.tickets}}</td>
+				{% if is_canelleable|get_at_index:forloop.counter0  %}
+					<td><a href="{% url 'cancel-booking' event.id %}">Cancel Booking</a></td>
+					{% else %}
+					<td></td>
+				{% endif %}
+					
+
+				
+				
+				
+				
+
+
+
+
+
+
+			</tr>
+			{% endfor %}
+
+		</tbody>
+	</table>
+</div>
+
+{% endif %}
+
+<div class="container mt-1" style="text-align:center;"><a href="{% url 'create-view' %}" class='btn btn-primary mb-5'>Create Event</a></div>
+{% endblock content %}

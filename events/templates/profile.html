@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5" style="text-align:center;"><h1>{{organizer}}</h1>
+<h5>Followers: {{followers_count}}</h5>
+{% if button_text == 'Follow' %}
+	<a href="{% url 'follow' organizer %}" class='btn btn-primary mb-5'>{{button_text}}</a>
+	{% elif button_text == 'Unfollow' %}
+<a href="{% url 'unfollow' organizer %}" class='btn btn-primary mb-5'>{{button_text}}</a>
+	{% else %}
+	
+{% endif %}
+</div>
+	<div class="container mx-5 my-5">
+	<table class="table">
+		<thead class="thead-dark">
+			<tr>
+				<th scope="col">Title</th>
+				<th scope="col">Date</th>
+				<th scope="col">Time</th>
+				<th scope="col">Location</th>
+				<th scope="col">Capacity</th>
+				<th scope="col">Tickets left</th>
+				<th scope="col">Deatil</th>
+				
+				
+			</tr>
+		</thead>
+		<tbody>
+			{% for event in events %}
+			<tr>
+				<th scope="row">{{event.title}}</th>
+				<td>{{event.date}}</td>
+				<td>{{event.time}}</td>
+				<td>{{event.location}}</td>
+				<td>{{event.seats}}</td>
+
+				<td>{{event.get_seats_left}}</td>
+				<td><a href="{% url 'event-detail' event.id %}">Details</a></td>
+
+
+				
+
+			</tr>
+			{% endfor %}
+
+
+		</tbody>
+	</table>
+</div>
+{% endblock content %}

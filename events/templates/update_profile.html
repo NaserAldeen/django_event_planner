@@ -5,11 +5,11 @@
   <div class="masthead-content">
     <div class="container">
       <div class="jumbotron">
-        <h2 class="masthead-subheading mb-0">Sign Up</h2>
-        <form action="{% url 'signup' %}" method="POST">
+        <h2 class="masthead-subheading mb-0">Update Profile</h2>
+        <form action="{% url 'update-profile' %}" method="POST">
           {% csrf_token %}
           {{form|crispy}}
-          <input class = "btn btn-primary btn-xl rounded-pill mt-5" type="submit" value="Sign Up">
+          <input class = "btn btn-primary btn-xl rounded-pill mt-5" type="submit" value="Update">
         </form>
       </div>
     </div>
