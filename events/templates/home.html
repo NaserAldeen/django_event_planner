@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load tagg %}
 {% block content %}
 <header class="masthead text-center text-white">
   <div class="masthead-content">
@@ -9,7 +9,7 @@
       {% if request.user.is_anonymous %}
       <a href="{% url 'signup' %}" class="btn btn-primary btn-xl rounded-pill mt-5">Sign up to find events!</a>
       {% else %}
-      <a href="{% url 'event-list' %}" class="btn btn-primary btn-xl rounded-pill mt-5">Find events!</a>
+      <a href="{% url 'event-list' %}" class="btn btn-primary btn-xl rounded-pill mt-5">Search for events!</a>
       {% endif %}
     </div>
   </div>
@@ -22,7 +22,7 @@
 </header>
 
 
-<div class="container mt-5"><h1 style="text-align:center;">Upcoming Events</h1></div>
+<div class="container mt-5"><h1 style="text-align:center;" id="tit">Upcoming Events</h1></div>
 <div class="row mt-5 mx-5">
   {% for event in upcoming_events %}
   <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 mb-5">
@@ -39,5 +39,6 @@
   {% endfor %}
 
 </div>
+
 
 {% endblock %}

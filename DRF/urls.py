@@ -16,7 +16,8 @@ urlpatterns = [
     path('mybookings/', views.MyBookingsList.as_view(), name='api-my-bookings'),
     path('following/', views.FollowingList.as_view(), name='api-following'),
     path('follow/<str:username>/', views.Follow.as_view(), name='api-follow'),
-    path('unfollow/<str:username>/', views.Unfollow.as_view(), name='api-unfollow'),
+    path('profile/<str:username>/', views.ProfilePage.as_view(), name='api-profile'),
+   
 
 
 ]

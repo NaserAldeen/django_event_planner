@@ -60,11 +60,6 @@
 				<th scope="col">Location</th>
 				<th scope="col">Tickets</th>
 				<th scope="col">Delete</th>
-				
-				
-
-
-
 				<th scope="col"></th>
 			</tr>
 		</thead>
@@ -77,23 +72,11 @@
 				<td>{{event.event.time}}</td>
 				<td>{{event.event.location}}</td>
 				<td>{{event.tickets}}</td>
-				{% if is_canelleable|get_at_index:forloop.counter0  %}
+				{% if event.event.is_cancelable  %}
 					<td><a href="{% url 'cancel-booking' event.id %}">Cancel Booking</a></td>
-					{% else %}
+				{% else %}
 					<td></td>
 				{% endif %}
-					
-
-				
-				
-				
-				
-
-
-
-
-
-
 			</tr>
 			{% endfor %}
 

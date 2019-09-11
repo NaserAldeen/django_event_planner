@@ -17,5 +17,5 @@ urlpatterns = [
     path('send/', views.send_email, name='email'),
     path('profile/<str:username>/', views.view_profile, name='view-profile'),
     path('follow/<str:username>/', views.follow, name='follow'),
-    path('unfollow/<str:username>/', views.unfollow, name='unfollow'),
+    # path('unfollow/<str:username>/', views.unfollow, name='unfollow'),
 ]

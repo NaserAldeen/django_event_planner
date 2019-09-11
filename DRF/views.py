@@ -4,8 +4,10 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdate
 from rest_framework.filters import SearchFilter, OrderingFilter
 from events.models import Booking, Event, MyUser
 from django.utils import timezone
-from .serializers import EventListSerializer, RegisterSerializer,FollowSerializer, CreateSerializer, CreateBookingSerializer, BookersListSerializer, MyBookingsSerializer, FollowingSerializer
+from .serializers import EventListSerializer, ProfileSerializer, RegisterSerializer, CreateSerializer, CreateBookingSerializer, BookersListSerializer, MyBookingsSerializer, FollowingSerializer
 from .permissions import IsOwner, CanBook, IsValidNumber
+from rest_framework.views import APIView
+from rest_framework.response import Response
 # Create your views here.
 
 class EventsList(ListAPIView):
@@ -13,7 +15,6 @@ class EventsList(ListAPIView):
     serializer_class = EventListSerializer
     
 class OwnerEventsList(ListAPIView):
-    
     serializer_class = EventListSerializer
 
     def get_queryset(self):
@@ -43,28 +44,18 @@ class CreateBooking(CreateAPIView):
 
         serializer.save(event=Event.objects.get(id=self.kwargs['event_id']), user=self.request.user)
 
-class Follow(RetrieveUpdateAPIView):
-    queryset = MyUser.objects.all()
-    serializer_class = FollowSerializer
+class Follow(APIView):
     permission_classes = [IsAuthenticated, ]
-    lookup_field = 'user__username'
-    lookup_url_kwarg = 'username'
-    def perform_update(self, serializer):
-        obj = MyUser.objects.get(user__username=self.kwargs['username'])
-        obj.followers.add(self.request.user)
-        # MyUser.objects.get(user=self.request.user).following.add(obj.user)
-        serializer.save()
-class Unfollow(RetrieveUpdateAPIView):
-    queryset = MyUser.objects.all()
-    serializer_class = FollowSerializer
-    permission_classes = [IsAuthenticated, ]
-    lookup_field = 'user__username'
-    lookup_url_kwarg = 'username'
-    def perform_update(self, serializer):
-        obj = MyUser.objects.get(user__username=self.kwargs['username'])
-        obj.followers.remove(self.request.user)
-        MyUser.objects.get(user=self.request.user).following.remove(obj.user)
-        serializer.save()
+    def get(self, request, username):
+    
+        obj = MyUser.objects.get(user__username=username)
+        if obj in request.user.following.all():
+            obj.followers.remove(request.user)
+            return Response("Unfollowed") 
+        else:
+            obj.followers.add(request.user)
+            return Response("Followed")        
+
 
 class BookersList(ListAPIView):
     serializer_class = BookersListSerializer
@@ -72,7 +63,6 @@ class BookersList(ListAPIView):
     def get_queryset(self):
         event = Event.objects.get(id=self.kwargs['event_id'])
         return event.bookings.all()
-
 
 class FollowingList(ListAPIView):
     serializer_class = FollowingSerializer
@@ -86,3 +76,10 @@ class MyBookingsList(ListAPIView):
     
     def get_queryset(self):
         return self.request.user.bookings.all()
+
+class ProfilePage(ListAPIView):
+    serializer_class = ProfileSerializer
+
+    def get_queryset(self):
+        return MyUser.objects.filter(user__username=self.kwargs['username'])
+

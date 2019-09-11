@@ -6,32 +6,29 @@ class MyBookingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = '__all__'
-class FollowSerializer(serializers.ModelSerializer):
-    username = serializers.SerializerMethodField()
-    class Meta:
-        model = MyUser
-        fields = ['username']
-
-    def get_username(self, obj):
-        return obj.user.username
-    
-class EventListSerializer(serializers.ModelSerializer):
-    owner = serializers.SerializerMethodField()
-    class Meta:
-        model = Event
-        fields = '__all__'
-
-    def get_owner(self, obj):
-        return obj.owner.username
 
 class BookersListSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
-
+    user = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='username'
+     )
     class Meta:
         model = Booking
         fields = ['user', 'tickets']
-    def get_user(self, obj):
-        return obj.user.username
+
+class EventListSerializer(serializers.ModelSerializer):
+    owner = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='username'
+     )
+    bookers = serializers.SerializerMethodField()
+    class Meta:
+        model = Event
+        fields = ['id', 'owner', 'title', 'description', 'location', 'date', 'time', 'seats', 'bookers']
+    def get_bookers(self, obj):
+        return BookersListSerializer(Booking.objects.filter(event=obj), many=True).data
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -65,4 +62,20 @@ class CreateBookingSerializer(serializers.ModelSerializer):
         model = Booking
         exclude = ['event', 'user']
 
-  
+class ProfileSerializer(serializers.ModelSerializer):
+    events = serializers.SerializerMethodField()
+    followers = serializers.SerializerMethodField()
+    bookings = serializers.SerializerMethodField()
+    class Meta:
+        model = MyUser
+        fields = ['events', 'followers', 'bookings']
+    def get_events(self, obj):
+        print(obj)
+        return EventListSerializer(Event.objects.filter(owner=obj.user), many=True).data
+
+    def get_followers(self, obj):
+        return len(obj.followers.all())
+
+    def get_bookings(self, obj):
+        return MyBookingsSerializer(Booking.objects.filter(user=obj.user), many=True).data
+

@@ -11,13 +11,14 @@ class UserSignup(forms.ModelForm):
         widgets={
         'password': forms.PasswordInput(),
         }
+
+
 class UserUpdate(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email' ]
 
   
-
 
 class UserLogin(forms.Form):
     username = forms.CharField(required=True)
@@ -28,3 +29,8 @@ class EventCreateForm(forms.ModelForm):
     class Meta:
         model = Event
         exclude = ['owner', ]
+
+        widgets={
+        'date': forms.DateInput(attrs={'type':'date'}),
+        'time': forms.TimeInput(attrs={'type':'time'})
+        }
