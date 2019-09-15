@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 text-center" style="width:70%;">
+	<div class="jumbotron bg-light">
+		<h2 class="masthead-subheading mb-0">Update Event</h2>
 	<form action="{% url 'update-event' event.id %}" method="POST">
 		{% csrf_token %}
 		{{form|crispy}}
 		<input type="submit" class='btn btn-primary btn-block' value="Update">
 	</form>
+</div>
 </div>
 {% endblock content %}
 

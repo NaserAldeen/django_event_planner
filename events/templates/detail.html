@@ -1,12 +1,28 @@
 {% extends "base.html" %}
 
-
+{% load qr_code %}
 {% block content %}
-<div class="container text-center mt-5 jumbotron text-light" style="margin-bottom:60px; background-color:rgba(0,0,0,.7);">
+<div class="container text-center my-5 jumbotron text-light" style="margin-bottom:60px; background-color:rgba(0,0,0,.7); width:75%">
 	<h1>{{event.title}}</h1>
-	<p>{{event.description}}</p> <br>
+	<div class="container mt-4" style="width:90%">
+	<p>{{event.description}}</p>
+	</div> <br>
 	<h4>When: {{event.date}} {{event.time}}</h4>
 	<h4>Where: {{event.location}}</h4>
+	<p>
+  <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Show QR Code
+  </a>
+
+</p>
+<div class="collapse mb-3" id="collapseExample">
+  <div class="card card-body bg-dark">
+  	<div class="container text-center">
+{% qr_from_text qr size="S" %}
+</div>
+  </div>
+</div>
+	
 	<h4>Organized by:<a href="{% url 'view-profile' event.owner %}"> {{event.owner}}</a></h4>
 	<h4>Tickets left: {{event.get_seats_left}}</h4><br> 
 
@@ -37,7 +53,7 @@
 
 
 </div>	
-
+<br>
 
 
 

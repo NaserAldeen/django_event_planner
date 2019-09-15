@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'events',
     'crispy_forms',
     'DRF',
+    'qr_code',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

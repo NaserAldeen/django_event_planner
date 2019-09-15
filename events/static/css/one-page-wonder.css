@@ -110,7 +110,7 @@ header.masthead .bg-circle-4 {
 
 @media (min-width: 992px) {
   header.masthead {
-    padding-top: calc(10rem + 55px);
+    padding-top: calc(10rem + 55);
     padding-bottom: 10rem;
   }
   header.masthead .masthead-content .masthead-heading {
@@ -139,10 +139,10 @@ header.masthead .bg-circle-4 {
   box-shadow: 0 0 0 0.2rem rgba(238, 9, 121, 0.5);
 }
 
-.btn-secondary {
+/*.btn-secondary {
   background-color: #ff6a00;
   border-color: #ff6a00;
-}
+}*/
 
 .btn-secondary:active, .btn-secondary:focus, .btn-secondary:hover {
   background-color: #cc5500 !important;

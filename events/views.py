@@ -103,6 +103,7 @@ def create_event(request):
         if form.is_valid():
             temp = form.save(commit=False)
             temp.owner = request.user
+            temp.tags = temp.listify()
             temp.save()
 
             return redirect("dashboard")
@@ -112,18 +113,23 @@ def create_event(request):
     return render(request, 'create_event.html', context)
 
 def upcoming_list(request):
+
     if request.user.is_anonymous:
         messages.success(request, "You need to log-in first")
         return redirect("login")
 
     events = Event.objects.filter(date__gte=timezone.now()).order_by("date","time")
+
     query = request.GET.get("q")
     query_len = 0
     if query:
+        query=query.strip()
         events = Event.objects.filter(
             Q(title__icontains=query)|
             Q(description__icontains=query)|
-            Q(owner__username__icontains=query)
+            Q(owner__username__icontains=query)|
+            Q(tags__icontains=query)
+         
 
             ).distinct().order_by("date","time")
         query_len = len(events)
@@ -132,7 +138,6 @@ def upcoming_list(request):
     number = int(request.GET.get("page_number", 1))
     events = p.page(number)
     
-
     context = {
         'upcoming_events': events,
         'number_of_pages': range(1, p.num_pages+1),
@@ -142,10 +147,11 @@ def upcoming_list(request):
 
 def event_detail(request, event_id):
     event = Event.objects.get(id=event_id)
- 
+    qr = "Event title: "+event.title + "\n" + "Event Organizer: " + event.owner.username + "\n"+ "Event date: " + str(event.date) + "\n"+ "Event time: " + str(event.time)
     context = {
         "event": event,
         'bookers': event.bookings.all(),
+        "qr":qr
        
     }
     return render(request, "detail.html", context)
@@ -153,7 +159,7 @@ def event_detail(request, event_id):
 def update_event(request, event_id):
 
     obj = Event.objects.get(id=event_id)
-
+    obj.tags = obj.unlistify()
     if not request.user == obj.owner:
         return redirect('home')
 
@@ -161,7 +167,9 @@ def update_event(request, event_id):
     if request.method == "POST":
         form = EventCreateForm(request.POST, instance=obj)
         if form.is_valid():
-            form.save()
+            tem = form.save(commit=False)
+            tem.tags = tem.listify()
+            tem.save()
             return redirect("event-detail", obj.id)
 
     context = {
@@ -186,15 +194,7 @@ def book_event(request, event_id):
         messages.warning(request, "Please enter a valid number")
         return redirect('event-detail', obj.id )
 
-
-    booking_obj, created = Booking.objects.get_or_create(user=request.user, event= obj)
-    if not created:
-        booking_obj.tickets += number
-        booking_obj.time = timezone.now()
-    else:
-        booking_obj.tickets = number
-    booking_obj.save()
-
+    booking_obj = Booking.objects.create(user=request.user, event= obj, tickets=number, time=timezone.now())
     email_body = """
     <h1>Your booking receipt</h1>
     <p><strong>Event:</strong> {}</p>
@@ -203,10 +203,11 @@ def book_event(request, event_id):
     <br>
     <p>Thank you!</p>
     """.format(booking_obj.event.title, booking_obj.time, number)
-    try:
-        send_email(request.user.email, "Booking Receipt", email_body )
-    except:
-        pass
+    if not booking_obj.event.owner == request.user:
+        try:
+            send_email(request.user.email, "Booking Receipt", email_body )
+        except:
+            pass
     return redirect('event-detail', obj.id )
 
 def cancel_booking(request, booking_id):
